@@ -3,7 +3,7 @@ import signal
 from Kalah import KalahGame
 
 
-GameActive = True
+GameActive = False
 
 
 ## function to handle ctrl-C and reasonable shutdown
@@ -16,26 +16,29 @@ def signal_handler(sig, frame):
 
 def main():
     print("% Main Started")
+    GameActive = True
 
     #RR Listen for interrupt on 'Ctrl+C':
     signal.signal(signal.SIGINT, signal_handler)
     
     #RR Ask player to define game parameters
-    mycups = input("Enter number of cups per player: ")
-    mystones = input("Enter number of stones per cup: ")
-    mycups = int(mycups)
-    mystones = int(mystones)
+    myPits = input("Enter number of pits per player: ")
+    myStones = input("Enter number of stones per pit: ")
+    myPits = int(myPits)
+    myStones = int(myStones)
 
     #RR Create a game board with given parameters:
-    myGame = KalahGame(mycups, mystones)
+    myGame = KalahGame(myPits, myStones)
 
     #RR Ask player to define who goes first
     myGame.askForFirstPlayer()
 
 
     while GameActive:
-        ##RR Ask Player 0 to make a move  
+
+        ##RR Ask Player 0 to make a move
         myGame.askForMove()
+        
 
         ##RR Make the move
         myGame.makeMove(myGame.SelectedMove)
@@ -44,9 +47,8 @@ def main():
             break
 
     myGame.printResults()
-    #print(GameActive)
+    GameActive = False
 
-    
 
     print("% Main Terminated")
 
