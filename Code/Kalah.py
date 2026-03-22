@@ -162,7 +162,6 @@ class KalahGame:
             #RR PlayerSets=[[CurrentPlayer's pits],[OppositePlayer's pits]]
         else: 
             self.ComputerIs0 = True
-            #RR If Player1 goes first reverse sets so that PlayerSets[0] always belongs to current player
     
     def validatePlayer(self, InputVar):
         if InputVar not in ['y', 'Y', 'Yes', 'n', 'N', 'No']:
@@ -208,7 +207,7 @@ class KalahGame:
         else:
             return True
 
-    def get_legal_moves(self):
+    def getLegalMoves(self):
         player_pits = self.PlayerSets[0][0:-1] #RR PlayerSets=[[CurrentPlayer's pits],[OppositePlayer's pits]] - return all pits of current player except the last one which is the goal
         return [pit for pit in player_pits if self.board[pit] > 0]
 
@@ -263,7 +262,7 @@ class KalahGame:
     def clone(self):
         return copy.deepcopy(self)
     
-    def game_result(self):
+    def gameResult(self):
         if self.ComputerIs0:
             computer_store = self.board[self.Player0End]
             human_store = self.board[self.Player1End]
