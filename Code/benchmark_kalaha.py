@@ -79,18 +79,12 @@ def play_single_game(game_id, ai_player0: AIConfig, ai_player1: AIConfig, pits, 
     Runs one full AI-vs-AI game and returns a dict with summary data.
     """
     if quiet:
-        # KalahGame.__init__ prints the board once; suppress it for clean timing/logs.
         with contextlib.redirect_stdout(io.StringIO()):
             game = KalahGame(pits, stones)
     else:
         game = KalahGame(pits, stones)
     game.ai = None
     game.endGame = False
-
-    # Silence automatic board printing during benchmarking.
-    # KalahGame.__init__ prints once, so you will still see some startup prints
-    # unless you remove/comment out self.printBoard() inside KalahGame.__init__.
-    # All move printing is already suppressed below with print_board=False.
 
     ai0 = ai_player0.build_ai()
     ai1 = ai_player1.build_ai()
@@ -100,17 +94,11 @@ def play_single_game(game_id, ai_player0: AIConfig, ai_player1: AIConfig, pits, 
     move_times_p1 = []
     total_game_start = time.perf_counter()
 
-    # Player 0 always starts by default in your KalahGame setup.
-    # Across benchmark rounds we will alternate which AI sits as Player 0 / Player 1.
     while not game.endGame:
         current_player = 0 if game.CurrentPlayerIs0 else 1
         current_ai = ai0 if current_player == 0 else ai1
         current_ai_name = ai_player0.name if current_player == 0 else ai_player1.name
 
-        # Important:
-        # The existing AI code assumes that "ComputerIs0" indicates which side
-        # the AI is currently optimizing for. For AI-vs-AI benchmarking, we set
-        # it dynamically before each move so each AI evaluates from its own side.
         game.ComputerIs0 = game.CurrentPlayerIs0
 
         legal_moves = game.getLegalMoves()
@@ -432,12 +420,10 @@ def run_benchmark(
         move_writer = csv.DictWriter(mf, fieldnames=move_fieldnames)
         move_writer.writeheader()
 
-        # Pairwise round-robin benchmark
         for ai_a, ai_b in combinations(ai_configs, 2):
             print(f"Running matchup: {ai_a.name} vs {ai_b.name}")
 
             for i in range(games_per_matchup):
-                # Alternate sides so each AI gets to start equally often
                 if i % 2 == 0:
                     player0_ai = ai_a
                     player1_ai = ai_b
@@ -536,7 +522,6 @@ def run_benchmark(
 
 
 if __name__ == "__main__":
-    # Recommended benchmark set based on your earlier report discussion
     ai_configs = [
         AIConfig(
             name="D2_Minimax_Simple",
